@@ -1,4 +1,4 @@
-import { JSX } from 'react';
+import * as React from 'react';
 
 export type Initial<T> = { type: "Initial"; data: T };
 export type Loading<T> = { type: "Loading"; data: T };

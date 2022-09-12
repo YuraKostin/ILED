@@ -1,13 +1,10 @@
 {
-  "name": "iled",
+  "name": "i.l.e.d.",
   "version": "0.0.1",
   "description": "I.L.E.D.: Discriminated union for happiness",
-  "main": "index.js",
-  "directories": {
-    "lib": "lib"
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -19,8 +16,16 @@
     "url": "https://github.com/YuraKostin/ILED/issues"
   },
   "homepage": "https://github.com/YuraKostin/ILED#readme",
-  "dependencies": {
-    "@rollup/plugin-typescript": "^8.4.0",
-    "react": "^18.2.0"
+  "keywords": [
+    "react",
+    "iled",
+    "i.l.e.d.",
+    "util",
+    "state",
+    "typescript"
+  ],
+  "devDependencies": {
+    "@types/react": "^18.0.19",
+    "typescript": "^4.8.3"
   }
 }
