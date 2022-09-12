@@ -1,0 +1,26 @@
+{
+  "name": "iled",
+  "version": "0.0.1",
+  "description": "I.L.E.D.: Discriminated union for happiness",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YuraKostin/ILED.git"
+  },
+  "author": "YuraKostin",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/YuraKostin/ILED/issues"
+  },
+  "homepage": "https://github.com/YuraKostin/ILED#readme",
+  "dependencies": {
+    "@rollup/plugin-typescript": "^8.4.0",
+    "react": "^18.2.0"
+  }
+}
