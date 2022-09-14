@@ -6,9 +6,12 @@ I.L.E.D. is an abbreviation of Initial, Loading, Error and Data - the most commo
 
 ## Examples | TODO
 
-### Base example
+### Basic react example
 
 ```ts
+// Describe application state where there is no any valuable data at Initial and Loading states
+// and object with string message at Error state
+// and also some User info at Data state
 type State = ILED<null, null, ErrorMessage, User>;
 
 type ErrorMessage = {
@@ -20,9 +23,11 @@ type User = {
   age: number;
 }
 
+// Just an example function, which emulates response from API
 const emulateUserRequest = () => Promise.resolve({ name: 'John', age: 38 });
 
 const App = () => {
+  // Define a state using the `State` type as a generic parameter into `useState` hook and Initial type value as initial value
   const [state, setState] = useState<State>({ type: 'Initial', data: null });
   
   const loadUser = () => {
@@ -47,17 +52,17 @@ const App = () => {
   }
   
   return (
-    <FoldILED 
-      state={state}
-      onInitial={() => <button onClick={loadUser}>Load user</button>}
-      onLoading={() => <span>Loading...</span>}
-      onError={({ message }) => <span>{message}</span>}
+    <FoldILED
+      state={state} // pass state
+      onInitial={() => <button onClick={loadUser}>Load user</button>} // show button which load user on Initial state
+      onLoading={() => <span>Loading...</span>}  // show `Loading...` on Loading state
+      onError={({ message }) => <span>{message}</span>}  // show error message on Error state
       onData={({ name, age }) => (
         <p>
           <span>Name: {name}</span>
           <span>Age: {age}</span>
         </p>
-      )}
+      )}  // show user data on Data state
     />
   )
 }
