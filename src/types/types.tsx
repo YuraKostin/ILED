@@ -1,9 +1,21 @@
 import * as React from 'react';
 
-export type Initial<T> = { type: "Initial"; data: T };
-export type Loading<T> = { type: "Loading"; data: T };
-export type Error<T> = { type: "Error"; data: T };
-export type Data<T> = { type: "Data"; data: T };
+export type Initial<T> = {
+    readonly type: "Initial";
+    readonly data: T
+};
+export type Loading<T> = {
+    readonly type: "Loading";
+    readonly data: T
+};
+export type Error<T> = {
+    readonly type: "Error";
+    readonly data: T
+};
+export type Data<T> = {
+    readonly type: "Data";
+    readonly data: T
+};
 
 export type IL<I, L> = Initial<I> | Loading<L>;
 export type IE<I, E> = Initial<I> | Error<E>;
