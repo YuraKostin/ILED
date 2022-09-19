@@ -177,7 +177,7 @@ type LoadingError = {message: string};
 ### Types constructors for creating Initial, Loading, Error and Data structures
 
 ```ts
-import {errorOf, initialOf, loadingOf} from "./index";
+import {dataOf, errorOf, initialOf, loadingOf} from "./index";
 
 type State = ILED<null, null, ErrorMessage, User>;
 
@@ -190,13 +190,13 @@ type User = {
     age: number;
 }
 
-const initialState = initialOf(null);
-const loadingState = loadingOf(null);
-const errorState = errorOf({message: 'Oops!'});
-const dataState = data({name: 'John', age: 38});
+const initialState = initialOf(null); // {type: 'Initial', data: null}
+const loadingState = loadingOf(null); // {type: 'Loading', data: null}
+const errorState = errorOf({message: 'Oops!'}); // {type: 'Error', data: {message: 'Oops!'}}
+const dataState = dataOf({name: 'John', age: 38}); // {type: 'Data', data: {name: 'John', age: 38}}
 ```
 
-For nested states you can wrap calls of constructors
+For nested states you can wrap calls of constructors inside each other
 
 ```ts
 import {ILED} from "./types";
@@ -207,7 +207,7 @@ type State = ILED<null, null, null, ILED<boolean, string, number, Array<string>>
 const state: State = dataOf(initialOf(true)); // {type: 'Data', data: {type: 'Initial', data: true}}
 ```
 
-There is a caveat for literals. If you need literal, you should use `as const` for the literal value
+There is a caveat for literals. If you need literal, you should use `as const` for the literal type value
 
 ```ts
 import {dataOf, initialOf} from "./index";
