@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 export type Initial<T> = {
     readonly type: "Initial";
     readonly data: T

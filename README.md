@@ -63,7 +63,7 @@ console.log(
 
 ### Basic react example
 
-```ts
+```tsx
 // Describe application state where there is no any valuable data at Initial and Loading states
 // and object with string message at Error state
 // and also some User info at Data state
@@ -97,12 +97,12 @@ const App = () => {
           type: 'Data',
           data,
         }))
-        .catch(error => {
+        .catch(error => ({
           type: 'Error',
           data: {
             message: error.message
           }
-        })
+        }))
     }, 2000);
   }
   
@@ -123,6 +123,99 @@ const App = () => {
 }
 ```
 
+### Nested state
+
+Sometimes you may want to build some complex state
+
+Let's imagine you have
+1. Books and reviews for them
+2. Initially you're able to load just book information
+3. When book uploaded, you can press button and then fetch all reviews
+
+So the state could look like
+
+```ts
+import {ILED} from "./types";
+
+type State = ILED<
+    null, // No payload on initial 
+    null, // No payload on book loading
+    LoadingError, // Object with message if something went wrong
+    ILED<
+        // Nested initial state with already existing book information
+        {book: Book},
+        // Nested loading state with already existing book information. Loading reviews in process
+        {book: Book},
+        // Nested error state with already existing book information. Loading was failed
+        {book: Book, error: LoadingError},
+        // Book and reviews 
+        {book: Book; reviews: Array<Review>} 
+    >
+>;
+
+type Book = {
+    id: number;
+    title: string;
+    author: string;
+    pages: number;
+    language: string;
+    genre: string;
+    published: string;
+}
+
+type Review = {
+    id: number;
+    bookId: number;
+    title: string;
+    text: string;
+    author: string;
+}
+
+type LoadingError = {message: string};
+```
+
+### Types constructors for creating Initial, Loading, Error and Data structures
+
+```ts
+import {errorOf, initialOf, loadingOf} from "./index";
+
+type State = ILED<null, null, ErrorMessage, User>;
+
+type ErrorMessage = {
+    message: string;
+};
+
+type User = {
+    name: string;
+    age: number;
+}
+
+const initialState = initialOf(null);
+const loadingState = loadingOf(null);
+const errorState = errorOf({message: 'Oops!'});
+const dataState = data({name: 'John', age: 38});
+```
+
+For nested states you can wrap calls of constructors
+
+```ts
+import {ILED} from "./types";
+import {dataOf, initialOf} from "./index";
+
+type State = ILED<null, null, null, ILED<boolean, string, number, Array<string>>>;
+
+const state: State = dataOf(initialOf(true)); // {type: 'Data', data: {type: 'Initial', data: true}}
+```
+
+There is a caveat for literals. If you need literal, you should use `as const` for the literal value
+
+```ts
+import {dataOf, initialOf} from "./index";
+
+type State = ILED<null, null, null, ILED<1, 2, 3, 4>>;
+
+const state: State = dataOf(initialOf(1 as const)); // {type: 'Data', data: {type: 'Initial', data: 1}}
+```
 
 ## FAQ
 
@@ -131,6 +224,7 @@ const App = () => {
 
 `Fold` kind components helps you fold your `ILED` state into `null` or JSX.Element.
 
-So if you have some data, wich can be different between Initial, Loading, Error and Data states, ILED kind types helps you to manage all this stuff easier.
+So if you have some data, which can be different between Initial, Loading, Error and Data states, 
+ILED kind types helps you to manage all this stuff easier.
 
 ### What about rerenders? | TODO
