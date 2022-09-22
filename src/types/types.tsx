@@ -26,3 +26,15 @@ export type IED<I, E, D> = Initial<I> | Error<E> | Data<D>;
 export type ILED<I, L, E, D> = Initial<I> | Loading<L> | Error<E> | Data<D>;
 
 export type FoldToRenderable<T> = (data: T) => JSX.Element | null;
+
+type ALL
+    = IL<unknown, unknown>
+    | IE<unknown, unknown>
+    | ID<unknown, unknown>
+    | ILE<unknown, unknown, unknown>
+    | ILD<unknown, unknown, unknown>
+    | IED<unknown, unknown, unknown>
+    | ILED<unknown, unknown, unknown, unknown>;
+
+export type PickType<S extends ALL, T extends S['type']> = Extract<S, { type: T }>;
+export type PickDataType<S extends ALL, T extends S['type']> = Extract<S, { type: T }>['data'];

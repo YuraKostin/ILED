@@ -217,6 +217,66 @@ type State = ILED<null, null, null, ILED<1, 2, 3, 4>>;
 const state: State = dataOf(initialOf(1 as const)); // {type: 'Data', data: {type: 'Initial', data: 1}}
 ```
 
+### Picking certain types
+What will you do, if there shouldn't be certain part of ILED sum type in some situation?
+
+To be honest, there are to obvious options:
+1. Use certain - Initial, Loading, Error and Data types and combine them the way you need
+2. Use Extract utility type to do something wierd like `Extract<ILED<1,2,3,4>, {type: 'Data'}>`, which infers `{type: 'Data', data: 4}`
+
+So, in my opinion the first option misses the context of our target type, and the second one is just ugly.
+That is why I have decided to add small utility type. 
+
+Let's say besides, a lot of properties, we have a paginator property, which can be in one of three states - Initial, Loading, Error.
+More than this, it can be only Initial on initial state, only Loading, on loading state, and Error or Data, on error or data state:
+
+```ts
+import {ILE, ILED, PickType} from "./types";
+
+type State = ILED<
+    SomeProps & PickType<Paginator, 'Initial'>,
+    SomeProps & {paginator: PickType<Paginator, 'Loading'>},
+    SomeProps & {paginator: PickType<Paginator, 'Initial' | 'Error'>},
+    SomeProps & {paginator: PickType<Paginator, 'Initial' | 'Error'>}
+>;
+
+type Paginator = ILE<null, null, { message: string }>;
+
+type SomeProps = {
+    a: string;
+    b: number;
+    c: boolean
+};
+```
+
+Well yeah... You may say "Hey, man, it is ugly too!". So, let me try to explain some pros of the approach:
+1. This way we can see the type - Paginator, which presents the part of the domain we are dealing with to achieve our goals
+2. Doing this, instead of using just `{paginator: Paginator}` makes us unavailable to represent invalid state for our imaginable task
+
+It will look cleaner, if we put different paginator state types in their own types:
+
+```ts
+import {ILE, ILED, PickType} from "./types";
+
+type State = ILED<
+    SomeProps & PaginatorInitial,
+    SomeProps & PaginatorLoading,
+    SomeProps & (PaginatorInitial | PaginatorError),
+    SomeProps & (PaginatorInitial | PaginatorError)
+>;
+
+type Paginator = ILE<null, null, { message: string }>;
+type PaginatorInitial = {paginator: PickType<Paginator, 'Initial'>};
+type PaginatorLoading = {paginator: PickType<Paginator, 'Loading'>};
+type PaginatorError = {paginator: PickType<Paginator, 'Error'>};
+
+type SomeProps = {
+    a: string;
+    b: number;
+    c: boolean
+};
+```
+
 ## FAQ
 
 ### Why should I use the package?
