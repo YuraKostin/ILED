@@ -1,6 +1,6 @@
 {
   "name": "iled",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "I.L.E.D.: Discriminated union for happiness",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
