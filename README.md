@@ -245,7 +245,7 @@ Endomorphism is just something like a mapping where input and output types are t
 
 So, if you have an array of `Todo` items like `['Learn JS', 'Learn TS']` you can describe an endomorphism like
 ```ts
-const addLearnFpTodo = (todo: Todo, todos: Todo[]): Todo[] => todos.concat('Learn FP');
+const addLearnFpTodo = (todos: Todo[]): Todo[] => todos.concat('Learn FP');
 
 const twoThingsToDo = ['Learn JS', 'Learn TS'] // Array of strings;
 const threeThingsToDo = addLearnFpTodo(twoTodo) // Also array of strings;
