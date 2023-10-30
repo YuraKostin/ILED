@@ -1,19 +1,22 @@
-export type Initial<T> = {
+export interface Initial<I> {
     readonly type: "Initial";
-    readonly data: T
-};
-export type Loading<T> = {
+    readonly initial: I
+}
+
+export interface Loading<L> {
     readonly type: "Loading";
-    readonly data: T
-};
-export type Error<T> = {
+    readonly loading: L
+}
+
+export interface Error<E> {
     readonly type: "Error";
-    readonly data: T
-};
-export type Data<T> = {
+    readonly error: E
+}
+
+export interface Data<D> {
     readonly type: "Data";
-    readonly data: T
-};
+    readonly data: D
+}
 
 export type IL<I, L> = Initial<I> | Loading<L>;
 export type IE<I, E> = Initial<I> | Error<E>;
@@ -37,4 +40,14 @@ type ALL
     | ILED<unknown, unknown, unknown, unknown>;
 
 export type PickType<S extends ALL, T extends S['type']> = Extract<S, { type: T }>;
-export type PickDataType<S extends ALL, T extends S['type']> = Extract<S, { type: T }>['data'];
+
+export type PickDataType<S extends ALL, T extends S['type']> =
+    Extract<S, { type: T }> extends {type: 'Initial', initial: infer I}
+        ? I
+        : Extract<S, { type: T }> extends {type: 'Loading', loading: infer L}
+            ? L
+            : Extract<S, { type: T }> extends {type: 'Error', error: infer E}
+                ? E
+                : Extract<S, { type: T }> extends {type: 'Data', data: infer D}
+                    ? D
+                    : never;
