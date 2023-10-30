@@ -1,23 +1,28 @@
 import {FoldToRenderable, ILED} from "../../types/";
 
-interface Props<I, L, E, D> {
+type DetailedILEDFolding<I, L, E, D> = {
     state: ILED<I, L, E, D>;
     onInitial: FoldToRenderable<I> | null;
     onLoading: FoldToRenderable<L> | null;
     onError: FoldToRenderable<E> | null;
     onData: FoldToRenderable<D> | null;
-}
+};
 
-export const FoldILED = <I, L, E, D>(props: Props<I, L, E, D>) => {
+type ILEDFoldingProps<I, L, E, D> = {
+    state: ILED<I, L, E, D>;
+    viewForAllStates: FoldToRenderable<ILED<I, L, E, D>>
+};
+
+export const DetailedILEDFolding = <I, L, E, D>(props: DetailedILEDFolding<I, L, E, D>) => {
     const { type } = props.state;
 
     switch (type) {
         case "Initial":
-            return props.onInitial ? props.onInitial(props.state.data) : null;
+            return props.onInitial ? props.onInitial(props.state.initial) : null;
         case "Loading":
-            return props.onLoading ? props.onLoading(props.state.data) : null;
+            return props.onLoading ? props.onLoading(props.state.loading) : null;
         case "Error":
-            return props.onError ? props.onError(props.state.data) : null;
+            return props.onError ? props.onError(props.state.error) : null;
         case "Data":
             return props.onData ? props.onData(props.state.data) : null;
         default: {
@@ -25,3 +30,6 @@ export const FoldILED = <I, L, E, D>(props: Props<I, L, E, D>) => {
         }
     }
 };
+
+export const ILEDFolding = <I, L, E, D>(props: ILEDFoldingProps<I, L, E, D>) =>
+    props.viewForAllStates(props.state);

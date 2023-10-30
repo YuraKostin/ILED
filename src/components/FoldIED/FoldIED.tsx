@@ -1,20 +1,26 @@
 import {FoldToRenderable, IED} from "../../types/";
 
-interface Props<I, E, D> {
+
+type DetailedIEDFolding<I, E, D> = {
     state: IED<I, E, D>;
     onInitial: FoldToRenderable<I> | null;
     onError: FoldToRenderable<E> | null;
     onData: FoldToRenderable<D> | null;
-}
+};
 
-export const FoldIED = <I, E, D>(props: Props<I, E, D>) => {
+type IEDFoldingProps<I, E, D> = {
+    state: IED<I, E, D>;
+    viewForAllStates: FoldToRenderable<IED<I, E, D>>
+};
+
+export const DetailedIEDFolding = <I, E, D>(props: DetailedIEDFolding<I, E, D>) => {
     const { type } = props.state;
 
     switch (type) {
         case "Initial":
-            return props.onInitial ? props.onInitial(props.state.data) : null;
+            return props.onInitial ? props.onInitial(props.state.initial) : null;
         case "Error":
-            return props.onError ? props.onError(props.state.data) : null;
+            return props.onError ? props.onError(props.state.error) : null;
         case "Data":
             return props.onData ? props.onData(props.state.data) : null;
         default: {
@@ -22,3 +28,6 @@ export const FoldIED = <I, E, D>(props: Props<I, E, D>) => {
         }
     }
 };
+
+export const IEDFolding = <I, E, D>(props: IEDFoldingProps<I, E, D>) =>
+    props.viewForAllStates(props.state);
