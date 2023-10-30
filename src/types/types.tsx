@@ -40,3 +40,14 @@ type ALL
     | ILED<unknown, unknown, unknown, unknown>;
 
 export type PickType<S extends ALL, T extends S['type']> = Extract<S, { type: T }>;
+
+export type PickDataType<S extends ALL, T extends S['type']> =
+    Extract<S, { type: T }> extends {type: 'Initial', initial: infer I}
+        ? I
+        : Extract<S, { type: T }> extends {type: 'Loading', loading: infer L}
+            ? L
+            : Extract<S, { type: T }> extends {type: 'Error', error: infer E}
+                ? E
+                : Extract<S, { type: T }> extends {type: 'Data', data: infer D}
+                    ? D
+                    : never;

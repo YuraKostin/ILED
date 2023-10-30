@@ -1,10 +1,49 @@
-import {ILD} from "../types";
+import {FoldToRenderable, ILD, PickDataType} from "../types";
 
 export const initialOf = <I, L = never, E = never, D = never>(initial: I): ILD<I, L, D> => ({type: 'Initial', initial});
 
 export const loadingOf = <L, I = never, E = never, D = never>(loading: L): ILD<I, L, D> => ({type: 'Loading', loading});
 
 export const dataOf = <D, I = never, L = never, E = never>(data: D): ILD<I, L, D> => ({type: 'Data', data});
+
+type DetailedFolding<I, L, D> = {
+    state: ILD<I, L, D>;
+    onInitial: FoldToRenderable<I> | null;
+    onLoading: FoldToRenderable<L> | null;
+    onData: FoldToRenderable<D> | null;
+};
+
+export const DetailedFolding = <I, L, D>(props: DetailedFolding<I, L, D>) => {
+    const { type } = props.state;
+
+    switch (type) {
+        case "Initial":
+            return props.onInitial ? props.onInitial(props.state.initial) : null;
+        case "Loading":
+            return props.onLoading ? props.onLoading(props.state.loading) : null;
+        case "Data":
+            return props.onData ? props.onData(props.state.data) : null;
+        default: {
+            return type;
+        }
+    }
+};
+
+export const foldValue = <I1, L1, D1, I2, L2, D2>(
+    ild: ILD<I1, L1, D1>,
+    onInitial: (v: PickDataType<typeof ild, 'Initial'>) => I2,
+    onLoading: (v: PickDataType<typeof ild, 'Loading'>) => L2,
+    onData: (v: PickDataType<typeof ild, 'Data'>) => D2,
+) => {
+    switch (ild.type) {
+        case "Initial":
+            return onInitial(ild.initial);
+        case "Loading":
+            return onLoading(ild.loading);
+        case "Data":
+            return onData(ild.data);
+    }
+};
 
 interface Endomorphism<I, L, D> {
     initial: (v: I) => I,

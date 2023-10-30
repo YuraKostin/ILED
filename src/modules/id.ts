@@ -1,8 +1,41 @@
-import {ID} from "../types";
+import {FoldToRenderable, ID, PickDataType} from "../types";
 
 export const initialOf = <I, D = never>(initial: I): ID<I, D> => ({type: 'Initial', initial});
 
 export const dataOf = <D, I = never>(data: D): ID<I, D> => ({type: 'Data', data});
+
+type DetailedFolding<I, D> = {
+    state: ID<I, D>;
+    onInitial: FoldToRenderable<I> | null;
+    onData: FoldToRenderable<D> | null;
+};
+
+export const DetailedFolding = <I, D>(props: DetailedFolding<I, D>) => {
+    const { type } = props.state;
+
+    switch (type) {
+        case "Initial":
+            return props.onInitial ? props.onInitial(props.state.initial) : null;
+        case "Data":
+            return props.onData ? props.onData(props.state.data) : null;
+        default: {
+            return type;
+        }
+    }
+};
+
+export const foldValue = <I1, D1, I2, D2>(
+    id: ID<I1, D1>,
+    onInitial: (v: PickDataType<typeof id, 'Initial'>) => I2,
+    onData: (v: PickDataType<typeof id, 'Data'>) => D2,
+) => {
+    switch (id.type) {
+        case "Initial":
+            return onInitial(id.initial);
+        case "Data":
+            return onData(id.data);
+    }
+};
 
 interface Endomorphism<I, D> {
     initial: (v: I) => I,

@@ -1,10 +1,49 @@
-import {IED} from "../types";
+import {FoldToRenderable, IED, PickDataType} from "../types";
 
 export const initialOf = <I, E = never, D = never>(initial: I): IED<I, E, D> => ({type: 'Initial', initial});
 
 export const errorOf = <E, I = never, D = never>(error: E): IED<I, E, D> => ({type: 'Error', error});
 
 export const dataOf = <D, I = never, E = never>(data: D): IED<I, E, D> => ({type: 'Data', data});
+
+type DetailedFolding<I, E, D> = {
+    state: IED<I, E, D>;
+    onInitial: FoldToRenderable<I> | null;
+    onError: FoldToRenderable<E> | null;
+    onData: FoldToRenderable<D> | null;
+};
+
+export const DetailedFolding = <I, E, D>(props: DetailedFolding<I, E, D>) => {
+    const { type } = props.state;
+
+    switch (type) {
+        case "Initial":
+            return props.onInitial ? props.onInitial(props.state.initial) : null;
+        case "Error":
+            return props.onError ? props.onError(props.state.error) : null;
+        case "Data":
+            return props.onData ? props.onData(props.state.data) : null;
+        default: {
+            return type;
+        }
+    }
+};
+
+export const foldValue = <I1, E1, D1, I2, E2, D2>(
+    ied: IED<I1, E1, D1>,
+    onInitial: (v: PickDataType<typeof ied, 'Initial'>) => I2,
+    onError: (v: PickDataType<typeof ied, 'Error'>) => E2,
+    onData: (v: PickDataType<typeof ied, 'Data'>) => D2,
+) => {
+    switch (ied.type) {
+        case "Initial":
+            return onInitial(ied.initial);
+        case "Error":
+            return onError(ied.error);
+        case "Data":
+            return onData(ied.data);
+    }
+};
 
 interface Endomorphism<I, E, D> {
     initial: (v: I) => I,

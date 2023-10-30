@@ -121,7 +121,7 @@ const App = () => {
     };
 
     return (
-        <DetailedILEDFolding
+        <DetailedFolding
             state={state} // pass state
             onInitial={() => (
                 <button onClick={loadUser}>
@@ -241,18 +241,26 @@ const state: State = dataOf(initialOf(1 as const)); // {type: 'Data', data: {typ
 Wow-wow, wait! Endomorphisms? Isn't it a something from functional programming? Absolutely. But let's see is it really
 as scary as it sound
 
-Endomorphism is just something like a mapping. But when you use `Array.prototype.map` you are able 
-to change the type of values, so `Array.prototype.map` let us make mapping from `A` to `B` like
-`[1,2,3].map(String) // ['1', '2', '3']`.
+Endomorphism is just something like a mapping where input and output types are the same.
 
-On the other side endomorphism is a mapping where input and output types are the same.
 So, if you have an array of `Todo` items like `['Learn JS', 'Learn TS']` you can describe an endomorphism like
 ```ts
-const addTodo = (todo: Todo, todos: Todo[]): Todo[] => todos.concat(todo);
+const addLearnFpTodo = (todo: Todo, todos: Todo[]): Todo[] => todos.concat('Learn FP');
 
 const twoThingsToDo = ['Learn JS', 'Learn TS'] // Array of strings;
-const threeThingsToDo = addTodo('LEarn FP', twoTodo) // Also array of strings;
+const threeThingsToDo = addLearnFpTodo(twoTodo) // Also array of strings;
 ```
+
+Increment and decrement are also endomorphisms
+
+```ts
+const increment = (n: number): number => n + 1;
+
+const one = 1 // number
+const two = inc(one) // number
+```
+
+This way, you can see that any function of type `a -> a` is an endomorphism
 
 So, when you want to update your ILED state you have two options:
 
@@ -376,38 +384,39 @@ const App = () => {
     };
 
     return (
-        <DetailedILEDFolding
-            state={state} // pass state
+        <DetailedFolding
+            state={state}
             onInitial={() => (
                 <button onClick={loadUser}>
                     Load user
                 </button>
-            )} // render button which load user on Initial state
-            onLoading={() => <span>Loading...</span>} // render `Loading...` on Loading state
-            onError={({message}) => <span>{message}</span>} // render error message on Error state
+            )}
+            onLoading={() => <span>Loading...</span>}
+            onError={({message}) => <span>{message}</span>}
             onData={({name, age}) => (
                 <p>
                     <span>Name: {name}</span>
                     <span>Age: {age}</span>
                     <button onClick={incrementAge}>Increment age</button>
                 </p>
-            )} // render user data on Data state
+            )}
         />
     )
 }
 ```
 
-### Different components for state folding
+### Different ways for state folding
 
-#### DetailedILEDFolding
-`DetailedILEDFolding` uses for cases, when there are mostly different components must be
+#### DetailedFolding
+`DetailedFolding` uses for cases, when there are mostly different components must be
 rendered for different states.
 
 ```tsx
 
 type State = ILED<null, null, ErrorMessage, User>;
 
-<DetailedILEDFolding
+// ...Somewhere in render
+<DetailedFolding
     state={state}
     onInitial={() => <LoadUserButton />}
     onLoading={() => <Loader />}
@@ -416,11 +425,11 @@ type State = ILED<null, null, ErrorMessage, User>;
 />
 ```
 
-#### ILEDFolding
-`ILEDFolding` uses for cases, when there is just one component enough to display the state
+#### Manual folding
+When there is just one component enough to display the state
 
 ```tsx
-import {DetailedILEDFolding, ILEDFolding} from "./FoldILED";
+import {DetailedFolding, ILEDFolding} from "./FoldILED";
 
 type State = ILED<
     NewTodo,
@@ -439,23 +448,71 @@ type NewTodoTitle = string;
 
 type ErrorMessage = string;
 
-<DetailedILEDFolding
+const NewTodoInput: React.FC<{
+    state: NewTodo,
+    addTodo: () => void,
+    updateTitle: (title: string) => void  
+}> = ({state, addTodo, updateTitle}) => {
+    const title = foldValue(
+        state,
+        ({title}) => title,
+        ({title}) => title,
+        ({title}) => title,
+    );
+    return (
+        <div>
+            <input
+                type="text"
+                placeholder="Title"
+                onChange={(e) => updateTitle(e.target.value)}
+                value={title}
+            />
+            <button
+                onClick={addTodo}
+                disabled={title.length < 1 || state.type === "Loading"}
+            >
+                Add
+            </button>
+            {state.type === "Loading" && <Loading />}
+            {state.type === "Error" && <ErrorMessage message={state.error.message} />}
+        </div>
+    );
+};
+
+// ...Somewhere in render
+<DetailedFolding
     state={state}
-    onInitial={() => (
+    onInitial={({newTodo}) => (
         <>
-            <ILEDFolding 
-                viewForAllState={(state) => (
-                    <div>
-                        <input type="text" value={state.}>
-                    </div>
-                )}
+            <NewTodoInput
+                state={newTodo}
+                addTodo={addTodoAction(newTodo.title)}
+                updateTitle={updateTitleAction}
             />
             <LoadUserButton/>
         </>
     )}
     onLoading={() => <Loader/>}
-    onError={({message}) => <LoadingError message={message}/>}
-    onData={({name, age}) => <UserCard name={name} age={age}/>}
+    onError={({message, newTodo}) => (
+        <>
+            <NewTodoInput
+                state={newTodo}
+                addTodo={addTodoAction(newTodo.title)}
+                updateTitle={updateTitleAction}
+            />
+            <LoadingError message={message}/>
+        </>
+    )}
+    onData={({name, age, newTodo}) => (
+        <>
+            <NewTodoInput
+                state={newTodo}
+                addTodo={addTodoAction(newTodo.title)}
+                updateTitle={updateTitleAction}
+            />
+            <UserCard name={name} age={age}/>
+        </>
+    )}
 />
 ```
 
@@ -518,8 +575,6 @@ type SomeProps = {
     c: boolean
 };
 ```
-
-
 
 ## FAQ
 
