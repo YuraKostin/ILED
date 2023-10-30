@@ -1,10 +1,10 @@
 import {FoldToRenderable, ILE, PickDataType} from "../types";
 
-export const initialOf = <I, L = never, E = never, D = never>(initial: I): ILE<I, L, E> => ({type: 'Initial', initial});
+export const initialOf = <I, L = never, E = never>(initial: I): ILE<I, L, E> => ({type: 'Initial', initial});
 
-export const loadingOf = <L, I = never, E = never, D = never>(loading: L): ILE<I, L, E> => ({type: 'Loading', loading});
+export const loadingOf = <L, I = never, E = never>(loading: L): ILE<I, L, E> => ({type: 'Loading', loading});
 
-export const errorOf = <E, I = never, L = never, D = never>(error: E): ILE<I, L, E> => ({type: 'Error', error});
+export const errorOf = <E, I = never, L = never>(error: E): ILE<I, L, E> => ({type: 'Error', error});
 
 type DetailedFolding<I, L, E> = {
     state: ILE<I, L, E>;

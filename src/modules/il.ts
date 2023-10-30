@@ -1,8 +1,8 @@
 import {FoldToRenderable, IL, PickDataType} from "../types";
 
-export const initialOf = <I, L = never, E = never, D = never>(initial: I): IL<I, L> => ({type: 'Initial', initial});
+export const initialOf = <I, L = never>(initial: I): IL<I, L> => ({type: 'Initial', initial});
 
-export const loadingOf = <L, I = never, E = never, D = never>(loading: L): IL<I, L> => ({type: 'Loading', loading});
+export const loadingOf = <L, I = never>(loading: L): IL<I, L> => ({type: 'Loading', loading});
 
 type DetailedFolding<I, L> = {
     state: IL<I, L>;

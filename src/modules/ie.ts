@@ -1,8 +1,8 @@
 import {FoldToRenderable, IE, PickDataType} from "../types";
 
-export const initialOf = <I, L = never, E = never, D = never>(initial: I): IE<I, E> => ({type: 'Initial', initial});
+export const initialOf = <I, E = never>(initial: I): IE<I, E> => ({type: 'Initial', initial});
 
-export const errorOf = <E, I = never, L = never, D = never>(error: E): IE<I, E> => ({type: 'Error', error});
+export const errorOf = <E, I = never>(error: E): IE<I, E> => ({type: 'Error', error});
 
 type DetailedFolding<I, E> = {
     state: IE<I, E>;
